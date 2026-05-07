@@ -8,14 +8,12 @@
 #include "includes/cornix54.h"
 
 // tap windows for ctl alt and gui
-
-#define HM_TAPPING_TERM 250
+#define HM_TAPPING_TERM 280
 #define HM_TAPPING_REPEAT 210
 
 // quick tapping for shift
-
 #define HM_TAPPING_TERM_FAST 200
-#define HM_PRIOR_IDLE 70
+#define HM_PRIOR_IDLE 150        // Increased from 70 for more reliable tap-detection
 #define BASE 0
 #define WIN 1
 #define LOWER 2
@@ -26,7 +24,6 @@
 #define DEBUG  7
 
 // https://github.com/urob/zmk-config/tree/main#timeless-homerow-mods
-
 #define KEYS_L LT0 LT1 LT2 LT3 LT4 LT5 LM0 LM1 LM2 LM3 LM4 LM5 LB0 LB1 LB2 LB3 LB4 LB5  // left hand
 #define KEYS_R RT0 RT1 RT2 RT3 RT4 RT5 RM0 RM1 RM2 RM3 RM4 RM5 RB0 RB1 RB2 RB3 RB4 RB5  // right hand
 #define THUMBS LH1 LH0 RH0 RH1
@@ -40,17 +37,14 @@
 #include <dt-bindings/zmk/pointing.h>
 
 / {
-    // Activate ADJUST layer by pressing raise and lower
-
     behaviors {
         hm_l: homerow_mods_left {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             bindings = <&kp>, <&kp>;
-
-            flavor = "tap-preferred";
+            flavor = "balanced";                 // Changed to balanced for "timeless" feel
             tapping-term-ms = <HM_TAPPING_TERM>;
-            quick-tap-ms = <200>;                // repeat on tap-into-hold
+            quick-tap-ms = <175>;                
             require-prior-idle-ms = <HM_PRIOR_IDLE>;
             hold-trigger-key-positions = <KEYS_R KEYS_T>;
             hold-trigger-on-release;
@@ -60,29 +54,21 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             bindings = <&kp>, <&kp>;
-
-            flavor = "tap-preferred";
+            flavor = "balanced";
             tapping-term-ms = <HM_TAPPING_TERM>;
-            quick-tap-ms = <200>;
+            quick-tap-ms = <175>;
             require-prior-idle-ms = <HM_PRIOR_IDLE>;
             hold-trigger-key-positions = <KEYS_L KEYS_T>;
             hold-trigger-on-release;
         };
 
-        // Positional Homerow mods for shift
-        // Use faster tapping term and disable some features that may
-        // cause false negatives.
-
         hm_shift_l: hm_shift_l {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             bindings = <&kp>, <&kp>;
-
-            //flavor = "tap-preferred";
-
-            flavor = "tap-preferred";
+            flavor = "balanced";
             tapping-term-ms = <HM_TAPPING_TERM_FAST>;
-            quick-tap-ms = <200>;
+            quick-tap-ms = <175>;
             require-prior-idle-ms = <HM_PRIOR_IDLE>;
             hold-trigger-key-positions = <KEYS_R KEYS_T>;
             hold-trigger-on-release;
@@ -92,89 +78,35 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             bindings = <&kp>, <&kp>;
-
-            flavor = "tap-preferred";
+            flavor = "balanced";
             tapping-term-ms = <HM_TAPPING_TERM_FAST>;
-            quick-tap-ms = <200>;
+            quick-tap-ms = <175>;
             require-prior-idle-ms = <HM_PRIOR_IDLE>;
             hold-trigger-key-positions = <KEYS_L KEYS_T>;
-
-            // for quick tapping; shift+~
-
             hold-trigger-on-release;
         };
-
-        /*
-         * Non-Positional Homerow Mods
-         * Used for &mm_grescm_gui behavior on left hand.
-         *
-         * Usage: &hm LSHFT T
-         * Tap: T
-         * Tap-Tap-Hold: Repeat T
-         * Hold: LSHIFT
-         */
 
         hm: homerow_mods {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             bindings = <&kp>, <&kp>;
-
             flavor = "tap-preferred";
             tapping-term-ms = <HM_TAPPING_TERM>;
             quick-tap-ms = <200>;
+            require-prior-idle-ms = <HM_PRIOR_IDLE>; // Added missing idle requirement
         };
 
         lt: layer_tap {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             bindings = <&mo>, <&kp>;
-
-            flavor = "hold-preferred";
+            flavor = "balanced";                    // Changed from hold-preferred to prevent misfires
             tapping-term-ms = <HM_TAPPING_TERM>;
             quick-tap-ms = <200>;
+            require-prior-idle-ms = <HM_PRIOR_IDLE>; // Added missing idle requirement
         };
     };
 
-    conditional_layers {
-        compatible = "zmk,conditional-layers";
-
-        adjust_layer {
-            if-layers = <3 3>;
-            then-layer = <4>;
-        };
-    };
-
-    combos {
-        compatible = "zmk,combos";
-
-        cb_ltm {
-            bindings = <&kp ESC>;
-            key-positions = <2 4>;
-            layers = <0 1>;
-        };
-
-        cb_lm {
-            bindings = <&kp TAB>;
-            key-positions = <14 16>;
-            layers = <0 1>;
-        };
-
-        cb_enter {
-            bindings = <&kp RET>;
-            key-positions = <21 19>;
-            layers = <0 1>;
-        };
-
-        layer3 {
-            bindings = <&kp N3>;
-            key-positions = <5 6>;
-        };
-
-        layer4 {
-            bindings = <&kp N4>;
-            key-positions = <5 6>;
-        };
-    };
 
     keymap {
         compatible = "zmk,keymap";
